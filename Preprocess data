@@ -1,0 +1,109 @@
+### Change of name
+q3_2022 <- Data_Q3_2022_Proyecto_Business
+q4_2022 <- Data_Q4_2022_Proyecto_Business
+q1_2023 <- Data_Q1_2023_Proyecto_Business
+q2_2023 <- Data_Q2_2023_Proyecto_Business
+q3_2023 <- Data_Q3_2023_Proyecto_Business
+q4_2023 <- Data_Q4_2023_Proyecto_Business
+
+### Transform values
+q3_2022$ValorTotalFacturado <- as.numeric(q3_2022$ValorTotalFacturado)
+q3_2022$TotalUnidadesFacturadas <- as.numeric(q3_2022$TotalUnidadesFacturadas)
+q3_2022$PrecioMinimoUnitario <- as.numeric(q3_2022$PrecioMinimoUnitario)
+q3_2022$PrecioMaximoUnitario <- as.numeric(q3_2022$PrecioMaximoUnitario)
+
+q4_2022$ValorTotalFacturado <- as.numeric(q4_2022$ValorTotalFacturado)
+q4_2022$TotalUnidadesFacturadas <- as.numeric(q4_2022$TotalUnidadesFacturadas)
+q4_2022$PrecioMinimoUnitario <- as.numeric(q4_2022$PrecioMinimoUnitario)
+q4_2022$PrecioMaximoUnitario <- as.numeric(q4_2022$PrecioMaximoUnitario)
+
+q1_2023$ValorTotalFacturado <- as.numeric(q1_2023$ValorTotalFacturado)
+q1_2023$TotalUnidadesFacturadas <- as.numeric(q1_2023$TotalUnidadesFacturadas)
+q1_2023$PrecioMinimoUnitario <- as.numeric(q1_2023$PrecioMinimoUnitario)
+q1_2023$PrecioMaximoUnitario <- as.numeric(q1_2023$PrecioMaximoUnitario)
+
+q2_2023$ValorTotalFacturado <- as.numeric(q2_2023$ValorTotalFacturado)
+q2_2023$TotalUnidadesFacturadas <- as.numeric(q2_2023$TotalUnidadesFacturadas)
+q2_2023$PrecioMinimoUnitario <- as.numeric(q2_2023$PrecioMinimoUnitario)
+q2_2023$PrecioMaximoUnitario <- as.numeric(q2_2023$PrecioMaximoUnitario)
+
+q3_2023$ValorTotalFacturado <- as.numeric(q3_2023$ValorTotalFacturado)
+q3_2023$TotalUnidadesFacturadas <- as.numeric(q3_2023$TotalUnidadesFacturadas)
+q3_2023$PrecioMinimoUnitario <- as.numeric(q3_2023$PrecioMinimoUnitario)
+q3_2023$PrecioMaximoUnitario <- as.numeric(q3_2023$PrecioMaximoUnitario)
+
+q4_2023$ValorTotalFacturado <- as.numeric(q4_2023$ValorTotalFacturado)
+q4_2023$TotalUnidadesFacturadas <- as.numeric(q4_2023$TotalUnidadesFacturadas)
+q4_2023$PrecioMinimoUnitario <- as.numeric(q4_2023$PrecioMinimoUnitario)
+q4_2023$PrecioMaximoUnitario <- as.numeric(q4_2023$PrecioMaximoUnitario)
+
+## Merge data frames
+
+merged_table <- rbind(q3_2022,q4_2022,q1_2023,q2_2023,q3_2023,q4_2023)
+View(merged_table)
+
+# Convert into csv (dont do this, didnt work)
+write.csv(merged_table, "Data Q3_2022 to Q4_2023.csv", row.names = FALSE)
+
+#Try to downsized it by converting it into .parquet (dont do this, didnt work)
+library(arrow)
+data <- read.csv('Data Q3_2022 to Q4_2023.csv')
+write_parquet(data, "Data Q3_2022 to Q4_2023.parquet")
+
+###Work on a single table with needed data
+
+final_table <- merged_table[ , c(2,3,15,16,17,19,21,24,25,26,27)]
+master <- Master_Codigo_CUM_Proyecto_Business [,c(2,3,17,18)]
+names(master)[names(master) == "atc"] <- "CUMCodATC"
+
+
+#Filter our data on the medications we want to see according to Master_Medicamentos_EM
+matches <- sapply(Master_Medicamentos_EM$DescripcionComercial, function(x) grep(x, final_table$DescripcionComercial))
+row_indices <- unique(unlist(matches))
+result <- final_table[row_indices, ]
+
+#Fill NAs con code cum
+result$CUMCodATC <- ifelse(result$DescripcionComercial == "TYSABRI", "L04AA23", result$CUMCodATC)
+result$CUMCodATC <- ifelse(result$DescripcionComercial == "LEMTRADA®", "L04AA34", result$CUMCodATC)
+result$CUMCodATC <- ifelse(result$DescripcionComercial == "LEMTRADA", "L04AA34", result$CUMCodATC)
+result$CUMCodATC <- ifelse(result$DescripcionComercial == "TYSABRI®", "L04AA23", result$CUMCodATC)
+
+#Change name of columns to be the same. This is the name of product column
+names(master)[names(master) == "producto"] <- "DescripcionComercial"
+
+#Change values to do a correct merge
+result$DescripcionComercial <- ifelse(result$DescripcionComercial == "MAVENCLAD®", "MAVENCLAD", result$DescripcionComercial)
+result$DescripcionComercial <- ifelse(result$DescripcionComercial == "AXIMOD-MS   0.5 MG C PSULAS", "AXIMOD", result$DescripcionComercial)
+result$DescripcionComercial <- ifelse(result$DescripcionComercial == "AXIMOD-MS ® 0.5 MG CÁPSULAS", "AXIMOD", result$DescripcionComercial)
+result$DescripcionComercial <- ifelse(result$DescripcionComercial == "GILENYA   0.5 MG CAPSULA DURA", "GILENYA", result$DescripcionComercial)
+result$DescripcionComercial <- ifelse(result$DescripcionComercial == "GILENYA ® 0.5 MG CAPSULA DURA", "GILENYA", result$DescripcionComercial)
+result$DescripcionComercial <- ifelse(result$DescripcionComercial == "ICLOMOD®", "ICLOMOD", result$DescripcionComercial)
+result$DescripcionComercial <- ifelse(result$DescripcionComercial == "LEBRINA  0 5 MG", "LEBRINA", result$DescripcionComercial)
+result$DescripcionComercial <- ifelse(result$DescripcionComercial == "LEBRINA® 0,5 MG", "LEBRINA", result$DescripcionComercial)
+result$DescripcionComercial <- ifelse(result$DescripcionComercial == "LEMTRADA®", "LEMTRADA", result$DescripcionComercial)
+result$DescripcionComercial <- ifelse(result$DescripcionComercial == "LIMOSTAD   0 5 MG CAPSULAS", "LIMOSTAD", result$DescripcionComercial)
+result$DescripcionComercial <- ifelse(result$DescripcionComercial == "OCREVUS  CONCENTRADO PARA SOLUCION PARA INFUSION 300MG/10ML", "OCREVUS", result$DescripcionComercial)
+result$DescripcionComercial <- ifelse(result$DescripcionComercial == "OCREVUS® CONCENTRADO PARA SOLUCION PARA INFUSION 300MG/10ML", "OCREVUS", result$DescripcionComercial)
+result$DescripcionComercial <- ifelse(result$DescripcionComercial == "SINGOMOD  0 5 MG C PSULAS", "SINGOMOD", result$DescripcionComercial)
+result$DescripcionComercial <- ifelse(result$DescripcionComercial == "SINGOMOD® 0.5 MG CÁPSULAS", "SINGOMOD", result$DescripcionComercial)
+result$DescripcionComercial <- ifelse(result$DescripcionComercial == "TYSABRI®", "TYSABRI", result$DescripcionComercial)
+
+
+master$DescripcionComercial <- ifelse(master$DescripcionComercial == "MAVENCLADÂ®", "MAVENCLAD", master$DescripcionComercial)
+master$DescripcionComercial <- ifelse(master$DescripcionComercial == "AXIMOD-MS Â® 0.5 MG CÃPSULAS", "AXIMOD", master$DescripcionComercial)
+master$DescripcionComercial <- ifelse(master$DescripcionComercial == "FINCLER Â®", "FINCLER", master$DescripcionComercial)
+master$DescripcionComercial <- ifelse(master$DescripcionComercial == "GILENYA Â® 0.5 MG CAPSULA DURA", "GILENYA", master$DescripcionComercial)
+master$DescripcionComercial <- ifelse(master$DescripcionComercial == "ICLOMODÂ®", "ICLOMOD", master$DescripcionComercial)
+master$DescripcionComercial <- ifelse(master$DescripcionComercial == "LEBRINAÂ® 0.5 MG", "LEBRINA", master$DescripcionComercial)
+master$DescripcionComercial <- ifelse(master$DescripcionComercial == "LEMTRADAÂ®", "LEMTRADA", master$DescripcionComercial)
+master$DescripcionComercial <- ifelse(master$DescripcionComercial == "KELBIFINGOLIMOD 0.5 MG CÃPSULAS", "LIMOSTAD", master$DescripcionComercial)
+master$DescripcionComercial <- ifelse(master$DescripcionComercial == "OCREVUSÂ® CONCENTRADO PARA SOLUCION PARA INFUSION 300MG/10ML", "OCREVUS", master$DescripcionComercial)
+master$DescripcionComercial <- ifelse(master$DescripcionComercial == "SINGOMODÂ® 0.5 MG CÃPSULAS", "SINGOMOD", master$DescripcionComercial)
+master$DescripcionComercial <- ifelse(master$DescripcionComercial == "TYSABRIÂ®", "TYSABRI", master$DescripcionComercial)
+
+#Merge data with master
+finale <- merge(result, master, by = "DescripcionComercial", all.x = TRUE)
+unique(finale$titular)
+
+# Download csv
+write.csv(finale, "Product Data Q3_2022 to Q4_2023.csv", row.names = FALSE)
