@@ -4,6 +4,10 @@ Diego Brule, Nicolas Tamara
 27/11/2024
 
 ``` r
+knitr::opts_chunk$set(fig.path = 'Figs/')
+```
+
+``` r
 library(dplyr)
 ```
 
@@ -57,10 +61,10 @@ Gilenya_ts <- Gilenya %>% group_by(Mes) %>% summarise(TotalUnidadesFacturadas = 
 ggplot(Fincler_ts, aes(x=Mes, y=TotalUnidadesFacturadas)) +geom_line()
 ```
 
-![](Project-Code_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](Figs/unnamed-chunk-4-1.png)<!-- -->
 
 ``` r
 ggplot(Gilenya, aes(x=Mes, y=TotalUnidadesFacturadas)) +geom_line()
 ```
 
-![](Project-Code_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
+![](Figs/unnamed-chunk-4-2.png)<!-- -->
