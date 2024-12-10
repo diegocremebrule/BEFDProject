@@ -1,0 +1,304 @@
+---
+title: "Project Code"
+author: "Diego Brule, Nicolas Tamara"
+date: "27/11/2024"
+output: github_document
+---
+
+```{r}
+
+library(dplyr)
+library(ggplot2)
+library(ggrepel)
+library(readxl)
+library(DIMORA)
+library(lmtest)
+
+```
+
+
+```{r}
+
+#All_data <- read_xlsx('Product Data finale.xlsx')
+All_data <- read.csv('Product_Data Q3_2022 to Q4_2023.csv')
+
+```
+
+```{r}
+
+Date_Converter <- function(month, year){
+  Month_name <- c('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December')
+  paste(month, year)
+}
+
+Date_Converter(3, 2023)
+
+```
+
+#Glimpse at the data
+
+First, let's look at the different time series for the different medicine brands
+
+```{r}
+
+#Creating a column 'mes' to represent total months. i.e. January 2023 is 13 instead of 1. This is to facilitate graphing the time series.
+
+#Creating a column 'Month' to have a more interpretable x axis. Can't figure out how to work this yet.
+
+All_data <- All_data %>% mutate(Mes = ifelse(AnnioCorte == 2022, MesFactura, MesFactura + 12 ))
+
+#All_data <- All_data %>% mutate(Month = Date_Converter(MesFactura, AnnioCorte))
+
+#ggplot(All_data, aes(x=Month, y=TotalUnidades, group = DescripcionComercial, colour = DescripcionComercial)) + geom_line() + scale_x_discrete(guide=guide_axis(check.overlap = TRUE))
+
+ggplot(All_data, aes(x=Mes, y=TotalUnidades, group = DescripcionComercial, colour = DescripcionComercial)) + geom_line()
+
+```
+
+We see that there are three brands: Iclomod, Lebrina, Gilenya That dominate the market in terms of units sold. Let's zoom in on those, and the other lower-selling brands separately.
+
+```{r}
+
+#Separate Data by different drug brands to ease analysis, select only ts variables
+
+Aximod <- All_data %>% filter(DescripcionComercial == 'AXIMOD')
+Fincler <- All_data %>% filter(DescripcionComercial == 'FINCLER')
+Gilenya <- All_data %>% filter(DescripcionComercial == 'GILENYA')
+Iclomod <- All_data %>% filter(DescripcionComercial == 'ICLOMOD')
+Kesimpta <- All_data %>% filter(DescripcionComercial == 'KESIMPTA')
+Lebrina <- All_data %>% filter(DescripcionComercial == 'LEBRINA')
+Lemtrada <- All_data %>% filter(DescripcionComercial == 'LEMTRADA')
+Limostad <- All_data %>% filter(DescripcionComercial == 'LIMOSTAD')
+Mavenclad <- All_data %>% filter(DescripcionComercial == 'MAVENCLAD')
+Ocrevus <- All_data %>% filter(DescripcionComercial == 'OCREVUS')
+Singomod <- All_data %>% filter(DescripcionComercial == 'SINGOMOD')
+Tysabri <- All_data %>% filter(DescripcionComercial == 'TYSABRI')
+
+
+```
+
+```{r}
+
+Trend_Data <- All_data %>% filter((DescripcionComercial == 'GILENYA') | (DescripcionComercial == 'LEBRINA') | (DescripcionComercial == 'ICLOMOD'))
+
+ggplot(Trend_Data, aes(x=Mes, y=TotalUnidades, group = DescripcionComercial, colour = DescripcionComercial)) + geom_line()
+
+```
+
+```{r}
+
+Flat_Data <- All_data %>% filter((DescripcionComercial != 'GILENYA') & (DescripcionComercial != 'LEBRINA') & (DescripcionComercial != 'ICLOMOD'))
+
+ggplot(Flat_Data, aes(x=Mes, y=TotalUnidades, group = DescripcionComercial, colour = DescripcionComercial)) + geom_line()
+
+```
+
+#First round of model fitting
+
+Since the top three brands have much higer volumes of units sold, the movements and fluctuations in sales are also bigger, so we will start by fitting a simple bass model, while we will start with a simple linear model for the other brands.
+
+
+```{r}
+BM_Iclomod <- BM(Iclomod$TotalUnidades, display = T)
+summary(BM_Iclomod)
+
+ggplot(Iclomod, aes(x=Mes, y=TotalUnidades)) + geom_point() + geom_line(linetype='dashed') + geom_line(y=make.instantaneous(BM_Iclomod$fitted), color='red') + ggtitle('Iclomod Units sold and BM fit')
+
+acf(BM_Iclomod$residuals)
+
+ggplot(Iclomod, aes(x=Mes, y=BM_Iclomod$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype = 'dashed') + ggtitle('Iclomod residuals of simple BM') + labs(x='Month', y='Residuals')
+
+```
+
+At a shallow level, the BM fit for Iclomod data is good, it has high $R^2$ and a relevant p-value for its variables. However, analysing the residuals graph we can see that while it contains a more or less constant variance, which is a good sign, it seems to have an underlying pattern, which means there is a pattern in the data that was not captured in the model. (Insert next model idea)
+
+```{r}
+
+BM_Gilenya <- BM(Gilenya$TotalUnidades)
+
+summary(BM_Gilenya)
+
+ggplot(Gilenya, aes(x=Mes, y=TotalUnidades)) + geom_point() + geom_line(linetype='dashed') + geom_line(y=make.instantaneous(BM_Gilenya$fitted), color='red') + ggtitle('Gilenya units sold and simple BM fit')
+
+acf(BM_Gilenya$residuals)
+
+ggplot(Gilenya, aes(x=Mes, y=BM_Gilenya$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype = 'dashed') + ggtitle('Gilenya residuals for simple BM fit')
+
+```
+
+Similarly to the BM fit for Iclomod, we have a high $R^2$ and relevant p-values, and constant variance in the residuals, but there seems to be an underlying pattern in the residuals. 
+
+
+```{r}
+
+BM_Lebrina <- BM(Lebrina$TotalUnidades, display = T)
+
+summary(BM_Lebrina)
+
+ggplot(Lebrina, aes(x=Mes, y=TotalUnidades)) + geom_point() + geom_line(linetype='dashed') + geom_line(y=make.instantaneous(BM_Lebrina$fitted), color='red') + ggtitle('Lebrina units sold and simple BM fit')
+
+acf(BM_Lebrina$residuals)
+
+ggplot(Lebrina, aes(x=Mes, y=BM_Lebrina$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype = 'dashed') + ggtitle('Lebrina residuals for simple BM fit')
+
+```
+
+And again, we see a high $R^2$, relevant p-values but less constant variance and seemingly an underlying residuals pattern.
+
+```{r}
+
+# A simple linear model for the smaller selling medications
+
+lm_Kesimpta <- lm(Kesimpta$TotalUnidades ~ Kesimpta$Mes)
+acf(Kesimpta$TotalUnidades)
+
+summary(lm_Kesimpta)
+
+ggplot(Kesimpta, aes(x=Mes, y=TotalUnidades)) + geom_line(linetype='dashed') + geom_point() +geom_abline(intercept = lm_Kesimpta$coefficients[1], slope = lm_Kesimpta$coefficients[2], color='red')
+
+dwtest(lm_Kesimpta)
+
+ggplot(Kesimpta, aes(x=Mes, y=lm_Kesimpta$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype='dashed')
+
+acf(lm_Kesimpta$residuals)
+
+```
+
+Kesimpta is one of the lower-selling brands, so we first fit a linear model to it. The model is good, it has high $R^2$ and relevant estimators according to their p-values, but as time goes on the variance grows. This is a sign of something missing in the model
+
+```{r}
+
+#Simple Linear model for Axmimod
+
+lm_Aximod <- lm(Aximod$TotalUnidades ~ Aximod$Mes)
+acf(Aximod$TotalUnidades)
+
+summary(lm_Aximod)
+
+ggplot(Aximod, aes(x=Mes, y=TotalUnidades)) + geom_line(linetype='dashed') + geom_point() +geom_abline(intercept = lm_Aximod$coefficients[1], slope = lm_Aximod$coefficients[2], color='red')
+
+dwtest(lm_Aximod)
+
+ggplot(Aximod, aes(x=Mes, y=lm_Aximod$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype='dashed')
+
+acf(lm_Aximod$residuals)
+
+```
+
+```{r}
+
+#Simple linear model for Fincler
+
+lm_Fincler <- lm(Fincler$TotalUnidades ~ Fincler$Mes)
+acf(Fincler$TotalUnidades)
+
+summary(lm_Fincler)
+
+ggplot(Fincler, aes(x=Mes, y=TotalUnidades)) + geom_line(linetype='dashed') + geom_point() +geom_abline(intercept = lm_Fincler$coefficients[1], slope = lm_Fincler$coefficients[2], color='red')
+
+dwtest(lm_Fincler)
+
+ggplot(Fincler, aes(x=Mes, y=lm_Fincler$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype='dashed')
+
+acf(lm_Fincler$residuals)
+
+```
+
+```{r}
+
+lm_Lemtrada <- lm(Lemtrada$TotalUnidades ~ Lemtrada$Mes)
+acf(Lemtrada$TotalUnidades)
+
+summary(lm_Lemtrada)
+
+ggplot(Lemtrada, aes(x=Mes, y=TotalUnidades)) + geom_line(linetype='dashed') + geom_point() +geom_abline(intercept = lm_Lemtrada$coefficients[1], slope = lm_Lemtrada$coefficients[2], color='red')
+
+dwtest(lm_Lemtrada)
+
+ggplot(Lemtrada, aes(x=Mes, y=lm_Lemtrada$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype='dashed')
+
+acf(lm_Lemtrada$residuals)
+
+```
+
+```{r}
+
+lm_Limostad <- lm(Limostad$TotalUnidades ~ Limostad$Mes)
+acf(Limostad$TotalUnidades)
+
+summary(lm_Limostad)
+
+ggplot(Limostad, aes(x=Mes, y=TotalUnidades)) + geom_line(linetype='dashed') + geom_point() +geom_abline(intercept = lm_Limostad$coefficients[1], slope = lm_Limostad$coefficients[2], color='red')
+
+dwtest(lm_Limostad)
+
+ggplot(Limostad, aes(x=Mes, y=lm_Limostad$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype='dashed')
+
+acf(lm_Limostad$residuals)
+
+```
+```{r}
+
+lm_Mavenclad <- lm(Mavenclad$TotalUnidades ~ Mavenclad$Mes)
+
+acf(Mavenclad$TotalUnidades)
+
+summary(lm_Lemtrada)
+
+ggplot(Mavenclad, aes(x=Mes, y=TotalUnidades)) + geom_line(linetype='dashed') + geom_point() +geom_abline(intercept = lm_Mavenclad$coefficients[1], slope = lm_Mavenclad$coefficients[2], color='red')
+
+dwtest(lm_Mavenclad)
+
+ggplot(Mavenclad, aes(x=Mes, y=lm_Mavenclad$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype='dashed')
+
+acf(lm_Mavenclad$residuals)
+
+```
+```{r}
+
+lm_Ocrevus <- lm(Ocrevus$TotalUnidades ~ Ocrevus$Mes)
+acf(Ocrevus$TotalUnidades)
+
+summary(lm_Ocrevus)
+
+ggplot(Ocrevus, aes(x=Mes, y=TotalUnidades)) + geom_line(linetype='dashed') + geom_point() +geom_abline(intercept = lm_Ocrevus$coefficients[1], slope = lm_Ocrevus$coefficients[2], color='red')
+
+dwtest(lm_Ocrevus)
+
+ggplot(Ocrevus, aes(x=Mes, y=lm_Ocrevus$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype='dashed')
+
+acf(lm_Ocrevus$residuals)
+
+```
+```{r}
+
+lm_Singomod <- lm(Singomod$TotalUnidades ~ Singomod$Mes)
+acf(Singomod$TotalUnidades)
+
+summary(lm_Singomod)
+
+ggplot(Singomod, aes(x=Mes, y=TotalUnidades)) + geom_line(linetype='dashed') + geom_point() +geom_abline(intercept = lm_Singomod$coefficients[1], slope = lm_Singomod$coefficients[2], color='red')
+
+dwtest(lm_Singomod)
+
+ggplot(Singomod, aes(x=Mes, y=lm_Singomod$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype='dashed')
+
+acf(lm_Singomod$residuals)
+
+```
+```{r}
+
+lm_Tysabri <- lm(Tysabri$TotalUnidades ~ Tysabri$Mes)
+acf(Tysabri$TotalUnidades)
+
+summary(lm_Tysabri)
+
+ggplot(Tysabri, aes(x=Mes, y=TotalUnidades)) + geom_line(linetype='dashed') + geom_point() +geom_abline(intercept = lm_Tysabri$coefficients[1], slope = lm_Tysabri$coefficients[2], color='red')
+
+dwtest(lm_Tysabri)
+
+ggplot(Tysabri, aes(x=Mes, y=lm_Tysabri$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype='dashed')
+
+acf(lm_Tysabri$residuals)
+
+```
