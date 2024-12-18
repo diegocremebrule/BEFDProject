@@ -61,18 +61,18 @@ We see that there are three brands: Iclomod, Lebrina, Gilenya That dominate the 
 
 #Separate Data by different drug brands to ease analysis, select only ts variables
 
-Aximod <- All_data %>% filter(DescripcionComercial == 'AXIMOD')
-Fincler <- All_data %>% filter(DescripcionComercial == 'FINCLER')
-Gilenya <- All_data %>% filter(DescripcionComercial == 'GILENYA')
-Iclomod <- All_data %>% filter(DescripcionComercial == 'ICLOMOD')
-Kesimpta <- All_data %>% filter(DescripcionComercial == 'KESIMPTA')
-Lebrina <- All_data %>% filter(DescripcionComercial == 'LEBRINA')
-Lemtrada <- All_data %>% filter(DescripcionComercial == 'LEMTRADA')
-Limostad <- All_data %>% filter(DescripcionComercial == 'LIMOSTAD')
-Mavenclad <- All_data %>% filter(DescripcionComercial == 'MAVENCLAD')
-Ocrevus <- All_data %>% filter(DescripcionComercial == 'OCREVUS')
-Singomod <- All_data %>% filter(DescripcionComercial == 'SINGOMOD')
-Tysabri <- All_data %>% filter(DescripcionComercial == 'TYSABRI')
+Aximod <- All_data %>% filter(DescripcionComercial == 'AXIMOD') %>% arrange(Mes)
+Fincler <- All_data %>% filter(DescripcionComercial == 'FINCLER') %>% arrange(Mes)
+Gilenya <- All_data %>% filter(DescripcionComercial == 'GILENYA') %>% arrange(Mes)
+Iclomod <- All_data %>% filter(DescripcionComercial == 'ICLOMOD') %>% arrange(Mes)
+Kesimpta <- All_data %>% filter(DescripcionComercial == 'KESIMPTA') %>% arrange(Mes)
+Lebrina <- All_data %>% filter(DescripcionComercial == 'LEBRINA') %>% arrange(Mes)
+Lemtrada <- All_data %>% filter(DescripcionComercial == 'LEMTRADA') %>% arrange(Mes)
+Limostad <- All_data %>% filter(DescripcionComercial == 'LIMOSTAD') %>% arrange(Mes)
+Mavenclad <- All_data %>% filter(DescripcionComercial == 'MAVENCLAD') %>% arrange(Mes)
+Ocrevus <- All_data %>% filter(DescripcionComercial == 'OCREVUS') %>% arrange(Mes)
+Singomod <- All_data %>% filter(DescripcionComercial == 'SINGOMOD') %>% arrange(Mes)
+Tysabri <- All_data %>% filter(DescripcionComercial == 'TYSABRI') %>% arrange(Mes)
 
 
 ```
@@ -160,11 +160,13 @@ dwtest(lm_Kesimpta)
 
 ggplot(Kesimpta, aes(x=Mes, y=lm_Kesimpta$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype='dashed')
 
+acf(Kesimpta$TotalUnidades)
+
 acf(lm_Kesimpta$residuals)
 
 ```
 
-Kesimpta is one of the lower-selling brands, so we first fit a linear model to it. The model is good, it has high $R^2$ and relevant estimators according to their p-values, but as time goes on the variance grows. This is a sign of something missing in the model
+Kesimpta is one of the lower-selling brands, so we first fit a linear model to it. The model is good, it has a relatively high $R^2$ and relevant estimators according to their p-values, but as time goes on the variance grows. This is a sign of something missing in the model. This can be further shown by the result of the DW test, which shows residuals contain a positive autocorrelation as $DW>2$, and the p-value shows that this autocorrelation is significant.
 
 ```{r}
 
@@ -181,9 +183,13 @@ dwtest(lm_Aximod)
 
 ggplot(Aximod, aes(x=Mes, y=lm_Aximod$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype='dashed')
 
+acf(Aximod$TotalUnidades)
+
 acf(lm_Aximod$residuals)
 
 ```
+
+For the Aximod data, we can see from the start by looking at the $R^2$ value that this is not a good model at all. $R^2$ Is very low, the coefficients table show that month is not a significant estimator, and the residuals graph shows an underlying pattern, and the DW test shows negative, significant autocorrelation.
 
 ```{r}
 
@@ -204,6 +210,8 @@ acf(lm_Fincler$residuals)
 
 ```
 
+Similar to the Aximod data, the linear model doesn't fit right to the Fincler data at all, despite it looking quite linear in the first glimpse we had of the data.
+
 ```{r}
 
 lm_Lemtrada <- lm(Lemtrada$TotalUnidades ~ Lemtrada$Mes)
@@ -220,6 +228,8 @@ ggplot(Lemtrada, aes(x=Mes, y=lm_Lemtrada$residuals)) + geom_point() + geom_hlin
 acf(lm_Lemtrada$residuals)
 
 ```
+For the Lemtrada data, we can see again a low $R^2$ value, and in the coefficient table we can see that the Month variable has a high p-value, which shows it's not a significant estimator for sales. The only 'good' thing we can see in this model is that there is no significant residual correlation.
+
 
 ```{r}
 
@@ -237,6 +247,8 @@ ggplot(Limostad, aes(x=Mes, y=lm_Limostad$residuals)) + geom_point() + geom_hlin
 acf(lm_Limostad$residuals)
 
 ```
+Same conclusion as Limostad data for all the same reasons.
+
 ```{r}
 
 lm_Mavenclad <- lm(Mavenclad$TotalUnidades ~ Mavenclad$Mes)
@@ -254,6 +266,8 @@ ggplot(Mavenclad, aes(x=Mes, y=lm_Mavenclad$residuals)) + geom_point() + geom_hl
 acf(lm_Mavenclad$residuals)
 
 ```
+Again, same conclusion as the last two models for the same reasons.
+
 ```{r}
 
 lm_Ocrevus <- lm(Ocrevus$TotalUnidades ~ Ocrevus$Mes)
@@ -270,6 +284,8 @@ ggplot(Ocrevus, aes(x=Mes, y=lm_Ocrevus$residuals)) + geom_point() + geom_hline(
 acf(lm_Ocrevus$residuals)
 
 ```
+And again, same conclusion same reasons.
+
 ```{r}
 
 lm_Singomod <- lm(Singomod$TotalUnidades ~ Singomod$Mes)
@@ -286,6 +302,8 @@ ggplot(Singomod, aes(x=Mes, y=lm_Singomod$residuals)) + geom_point() + geom_hlin
 acf(lm_Singomod$residuals)
 
 ```
+Same conclusions same reasons.
+
 ```{r}
 
 lm_Tysabri <- lm(Tysabri$TotalUnidades ~ Tysabri$Mes)
@@ -301,4 +319,102 @@ ggplot(Tysabri, aes(x=Mes, y=lm_Tysabri$residuals)) + geom_point() + geom_hline(
 
 acf(lm_Tysabri$residuals)
 
+```
+
+From the Tysabri data, we can see in the coefficients table that Month is actually a significant predictor for sales, but $R^2$ is low, the residuals graph does not have constant variance and shows an underlying pattern, and the DW test backs this up as it has a low value, indicating negative significant autocorrelation.
+
+Now, let's have a deeper look into some models: Iclomod, Aximod and Kesimpta. A reminder of what their data and their first models look like:
+
+```{r}
+
+ggplot(Iclomod, aes(x=Mes, y=TotalUnidades)) + geom_point() + geom_line(linetype='dashed') + geom_line(y=make.instantaneous(BM_Iclomod$fitted), color='red') + ggtitle('Iclomod Units sold and BM fit')
+
+ggplot(Kesimpta, aes(x=Mes, y=TotalUnidades)) + geom_line(linetype='dashed') + geom_point() +geom_abline(intercept = lm_Kesimpta$coefficients[1], slope = lm_Kesimpta$coefficients[2], color='red') +ggtitle('Kesimpta Units Sold and BM fit')
+
+ggplot(Aximod, aes(x=Mes, y=TotalUnidades)) + geom_line(linetype='dashed') + geom_point() +geom_abline(intercept = lm_Aximod$coefficients[1], slope = lm_Aximod$coefficients[2], color='red') + ggtitle('Aximod Units Sold and BM fit')
+
+
+```
+For Iclomod, let's consider a GBM with an exponential shock.
+
+```{r}
+
+GBM_Iclomod <- GBM(Iclomod$TotalUnidades, shock = 'exp', nshock=1, prelimestimates = c(BM_Iclomod$coefficients[1], BM_Iclomod$coefficients[2], BM_Iclomod$coefficients[3], 9, -0.1, 0.4))
+
+ggplot(Iclomod, aes(x=Mes, y=TotalUnidades)) + geom_point() + geom_line(linetype='dashed') + geom_line(aes(y=make.instantaneous(GBM_Iclomod$fitted)), color='red')
+
+acf(GBM_Iclomod$residuals)
+
+ggplot(Iclomod, aes(x=Mes, y=GBM_Iclomod$residuals)) + geom_point() + geom_hline(yintercept=0, linetype = 'dashed') 
+
+summary(GBM_Iclomod)
+
+
+```
+
+We can see an improvement in the model for the Iclomod data, for starters, the $R^2$ is higher, secondly, residual variance is much more stable and less trend and pattern is visible in it, shown in the lower residual standard error. The shock introduced at month 9 suggests an event that occured in September 2023 that may have positively shocked sales in the Iclomod brand. But with a superficial look at data from other Gilenya and Lebrina, the two other big brands in the market, we can see that sales also spike up in September 2023, although not as violently as for Iclomod. This could suggest that there was some event, campaign or policy that affected the market. 
+
+For Kesimpta, let's consider transforming the data to a log scale, as there is constantly growing variance shown.
+
+```{r}
+
+summary(lm_Kesimpta)
+
+Kesimpta_log <- log(Kesimpta$TotalUnidades)
+
+lm_log_Kesimpta <- lm(Kesimpta_log ~ Kesimpta$Mes)
+
+summary(lm_log_Kesimpta)
+
+ggplot(Kesimpta, aes(x=Mes, y=Kesimpta_log)) + geom_point() + geom_line(linetype='dashed')+ geom_line(aes(x=Mes, y=lm_log_Kesimpta$coefficients[1] + lm_log_Kesimpta$coefficients[2]*Mes), color='red')
+
+acf(lm_log_Kesimpta$residuals)
+
+ggplot(Kesimpta, aes(x=Mes, y=lm_log_Kesimpta$residuals)) + geom_point() + geom_hline(yintercept = 0, color='red')
+
+dwtest(lm_log_Kesimpta)
+
+```
+
+A linear model to the log transformed data for Kesimpta improves the issue of the constantly growing variance, however, the $R^2$ is smaller, and there seems to be an underlying pattern in the model's residuals. This is confirmed by the dw test, where we reject the null hypothesis that autocorrelation is 0, due to the p-score being 0.08. A possible better model here could be a BM, since we know a linear model is unrealistic, as no product would have unbounded growth in the market. 
+
+```{r}
+
+BM_log_Kesimpta <- BM(Kesimpta_log)
+
+summary(BM_log_Kesimpta)
+
+ggplot(Kesimpta, aes(x=Mes, y=Kesimpta_log)) + geom_point() + geom_line(linetype='dashed') + geom_line( y=make.instantaneous(BM_log_Kesimpta$fitted), color='red') + ggtitle('Kesimpta log sales with BM model')
+
+acf(BM_log_Kesimpta$residuals)
+
+ggplot(Kesimpta, aes(x=Mes, y=BM_log_Kesimpta$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype='dashed')
+```
+
+Here we have so far the best fitting model for the Kesimpta data. $R^2$ is high, the estimators are significant, and variance is much more stable.  However, there is still sinusodial behaviour in the acf for the model residuals and we can see a clear pattern once we plot the residuals: There is a steep upward trend in residuals at the start and then it flattens out. This may suggest a shock at the start of the data, so one last possible improvement would be to consider a positive shock at the start. 
+
+```{r}
+
+GBM_log_Kesimpta <- GBM(Kesimpta_log, shock='exp', nshock=1, prelimestimates = c(BM_log_Kesimpta$coefficients[1], BM_log_Kesimpta$coefficients[2], BM_log_Kesimpta$coefficients[3], 7, -0.5, 0.5))
+
+summary(GBM_log_Kesimpta)
+
+ggplot(Kesimpta, aes(x=Mes, y=Kesimpta_log)) + geom_point() + geom_line(linetype='dashed') + geom_line( y=make.instantaneous(GBM_log_Kesimpta$fitted), color='red') + ggtitle('Kesimpta log sales with BM model')
+
+acf(GBM_log_Kesimpta$residuals)
+
+ggplot(Kesimpta, aes(x=Mes, y=GBM_log_Kesimpta$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype='dashed')
+
+```
+This model actually has a slightly lower $R^2$ than the BM without the shock, but it greatly reduces variance in the residuals, and gets rid of most of the underlying pattern in them, implying that the model captures much more accurately the shape of the data. 
+
+Another possibility is to consider an ARIMA model for the Kesimpta data, since we can see a clear upwards trend in the data. 
+
+```{r}
+
+Arima_kesimpta <- arima(Kesimpta$TotalUnidades, order = c(0,1,0), seasonal = c(0,0,0))
+summary(Arima_kesimpta)
+
+plot(Kesimpta$TotalUnidades)
+lines(fitted(Arima_kesimpta), col=2)
 ```

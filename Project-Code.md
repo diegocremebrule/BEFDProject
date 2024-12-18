@@ -21,26 +21,15 @@ library(dplyr)
 ``` r
 library(ggplot2)
 library(ggrepel)
-```
-
-    ## Warning: package 'ggrepel' was built under R version 4.3.3
-
-``` r
 library(readxl)
 library(DIMORA)
 ```
 
-    ## Warning: package 'DIMORA' was built under R version 4.3.3
-
     ## Loading required package: minpack.lm
-
-    ## Warning: package 'minpack.lm' was built under R version 4.3.3
 
     ## Loading required package: numDeriv
 
     ## Loading required package: forecast
-
-    ## Warning: package 'forecast' was built under R version 4.3.3
 
     ## Registered S3 method overwritten by 'quantmod':
     ##   method            from
@@ -48,21 +37,13 @@ library(DIMORA)
 
     ## Loading required package: reshape2
 
-    ## Warning: package 'reshape2' was built under R version 4.3.3
-
     ## Loading required package: deSolve
-
-    ## Warning: package 'deSolve' was built under R version 4.3.3
 
 ``` r
 library(lmtest)
 ```
 
-    ## Warning: package 'lmtest' was built under R version 4.3.3
-
     ## Loading required package: zoo
-
-    ## Warning: package 'zoo' was built under R version 4.3.3
 
     ## 
     ## Attaching package: 'zoo'
@@ -115,18 +96,18 @@ the other lower-selling brands separately.
 ``` r
 #Separate Data by different drug brands to ease analysis, select only ts variables
 
-Aximod <- All_data %>% filter(DescripcionComercial == 'AXIMOD')
-Fincler <- All_data %>% filter(DescripcionComercial == 'FINCLER')
-Gilenya <- All_data %>% filter(DescripcionComercial == 'GILENYA')
-Iclomod <- All_data %>% filter(DescripcionComercial == 'ICLOMOD')
-Kesimpta <- All_data %>% filter(DescripcionComercial == 'KESIMPTA')
-Lebrina <- All_data %>% filter(DescripcionComercial == 'LEBRINA')
-Lemtrada <- All_data %>% filter(DescripcionComercial == 'LEMTRADA')
-Limostad <- All_data %>% filter(DescripcionComercial == 'LIMOSTAD')
-Mavenclad <- All_data %>% filter(DescripcionComercial == 'MAVENCLAD')
-Ocrevus <- All_data %>% filter(DescripcionComercial == 'OCREVUS')
-Singomod <- All_data %>% filter(DescripcionComercial == 'SINGOMOD')
-Tysabri <- All_data %>% filter(DescripcionComercial == 'TYSABRI')
+Aximod <- All_data %>% filter(DescripcionComercial == 'AXIMOD') %>% arrange(Mes)
+Fincler <- All_data %>% filter(DescripcionComercial == 'FINCLER') %>% arrange(Mes)
+Gilenya <- All_data %>% filter(DescripcionComercial == 'GILENYA') %>% arrange(Mes)
+Iclomod <- All_data %>% filter(DescripcionComercial == 'ICLOMOD') %>% arrange(Mes)
+Kesimpta <- All_data %>% filter(DescripcionComercial == 'KESIMPTA') %>% arrange(Mes)
+Lebrina <- All_data %>% filter(DescripcionComercial == 'LEBRINA') %>% arrange(Mes)
+Lemtrada <- All_data %>% filter(DescripcionComercial == 'LEMTRADA') %>% arrange(Mes)
+Limostad <- All_data %>% filter(DescripcionComercial == 'LIMOSTAD') %>% arrange(Mes)
+Mavenclad <- All_data %>% filter(DescripcionComercial == 'MAVENCLAD') %>% arrange(Mes)
+Ocrevus <- All_data %>% filter(DescripcionComercial == 'OCREVUS') %>% arrange(Mes)
+Singomod <- All_data %>% filter(DescripcionComercial == 'SINGOMOD') %>% arrange(Mes)
+Tysabri <- All_data %>% filter(DescripcionComercial == 'TYSABRI') %>% arrange(Mes)
 ```
 
 ``` r
@@ -168,18 +149,18 @@ summary(BM_Iclomod)
     ## 
     ## Residuals:
     ##     Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ## -3911.1 -2663.5 -1651.0  -163.9  1265.3  9305.2 
+    ## -7603.6 -3950.3 -1192.6  -914.8   441.6 10765.2 
     ## 
     ## Coefficients:
     ##        Estimate    Std.Error        Lower        Upper  p-value    
-    ## m 2.714974e+05 1.712896e+04 2.379252e+05 3.050695e+05 6.98e-10 ***
-    ## p 1.831285e-02 1.179325e-03 1.600141e-02 2.062428e-02 9.00e-10 ***
-    ## q 2.275404e-01 2.354995e-02 1.813833e-01 2.736974e-01 2.68e-07 ***
+    ## m 2.539892e+05 1.496121e+04 2.246658e+05 2.833127e+05 2.97e-10 ***
+    ## p 1.647355e-02 1.555315e-03 1.342518e-02 1.952191e-02 9.20e-08 ***
+    ## q 2.630499e-01 2.837341e-02 2.074390e-01 3.186607e-01 4.30e-07 ***
     ## ---
     ##  Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ##  Residual standard error  4091.066  on  13  degrees of freedom
-    ##  Multiple R-squared:   0.998902  Residual sum of squares:  217578671
+    ##  Residual standard error  5022.665  on  13  degrees of freedom
+    ##  Multiple R-squared:   0.998346  Residual sum of squares:  327953142
 
 ``` r
 ggplot(Iclomod, aes(x=Mes, y=TotalUnidades)) + geom_point() + geom_line(linetype='dashed') + geom_line(y=make.instantaneous(BM_Iclomod$fitted), color='red') + ggtitle('Iclomod Units sold and BM fit')
@@ -222,18 +203,18 @@ summary(BM_Gilenya)
     ## 
     ## Residuals:
     ##     Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ## -4183.9 -1398.1   569.3   224.9  1765.8  4093.1 
+    ## -3957.4 -2432.1   398.0  -131.6  1205.8  5419.8 
     ## 
     ## Coefficients:
     ##        Estimate    Std.Error        Lower        Upper  p-value    
-    ## m 8.486166e+05 1.023466e+05 6.480210e+05 1.049212e+06 5.53e-07 ***
-    ## p 3.396120e-02 3.466326e-03 2.716733e-02 4.075508e-02 6.54e-08 ***
-    ## q 3.272701e-02 1.115275e-02 1.086803e-02 5.458600e-02 1.03e-02   *
+    ## m 7.673444e+05 6.915959e+04 6.317941e+05 9.028947e+05 1.25e-08 ***
+    ## p 3.664171e-02 2.581882e-03 3.158131e-02 4.170211e-02 4.23e-10 ***
+    ## q 4.409796e-02 1.088727e-02 2.275930e-02 6.543662e-02 1.05e-03  **
     ## ---
     ##  Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ##  Residual standard error  2645.307  on  15  degrees of freedom
-    ##  Multiple R-squared:   0.999918  Residual sum of squares:  104964701
+    ##  Residual standard error  2885.32  on  15  degrees of freedom
+    ##  Multiple R-squared:   0.999902  Residual sum of squares:  124876105
 
 ``` r
 ggplot(Gilenya, aes(x=Mes, y=TotalUnidades)) + geom_point() + geom_line(linetype='dashed') + geom_line(y=make.instantaneous(BM_Gilenya$fitted), color='red') + ggtitle('Gilenya units sold and simple BM fit')
@@ -272,19 +253,19 @@ summary(BM_Lebrina)
     ##   BM(series = Lebrina$TotalUnidades, display = T)
     ## 
     ## Residuals:
-    ##      Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-    ## -5362.24 -1729.17  -242.27    86.66  1628.25  6852.90 
+    ##     Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ## -5409.2 -2766.1  -625.1  -118.8  1879.6  7008.9 
     ## 
     ## Coefficients:
     ##         Estimate    Std.Error         Lower        Upper p-value  
-    ## m  5.548942e+05 3.092866e+07 -6.006416e+07 6.117395e+07   0.986  
-    ## p  3.427797e-02 1.910483e+00 -3.710199e+00 3.778755e+00   0.986  
-    ## q -3.427400e-02 1.911016e+00 -3.779797e+00 3.711249e+00   0.986  
+    ## m  5.593349e+05 5.032352e+07 -9.807295e+07 9.919162e+07   0.991  
+    ## p  3.388489e-02 3.048464e+00 -5.940995e+00 6.008764e+00   0.991  
+    ## q -3.389894e-02 3.048638e+00 -6.009120e+00 5.941322e+00   0.991  
     ## ---
     ##  Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ##  Residual standard error  3716.665  on  15  degrees of freedom
-    ##  Multiple R-squared:   0.999322  Residual sum of squares:  207204028
+    ##  Residual standard error  3901.76  on  15  degrees of freedom
+    ##  Multiple R-squared:   0.999253  Residual sum of squares:  228356008
 
 ``` r
 ggplot(Lebrina, aes(x=Mes, y=TotalUnidades)) + geom_point() + geom_line(linetype='dashed') + geom_line(y=make.instantaneous(BM_Lebrina$fitted), color='red') + ggtitle('Lebrina units sold and simple BM fit')
@@ -353,7 +334,7 @@ dwtest(lm_Kesimpta)
     ##  Durbin-Watson test
     ## 
     ## data:  lm_Kesimpta
-    ## DW = 2.6282, p-value = 0.8817
+    ## DW = 2.4878, p-value = 0.7887
     ## alternative hypothesis: true autocorrelation is greater than 0
 
 ``` r
@@ -363,10 +344,16 @@ ggplot(Kesimpta, aes(x=Mes, y=lm_Kesimpta$residuals)) + geom_point() + geom_hlin
 ![](Project-Code_files/figure-gfm/unnamed-chunk-11-3.png)<!-- -->
 
 ``` r
-acf(lm_Kesimpta$residuals)
+acf(Kesimpta$TotalUnidades)
 ```
 
 ![](Project-Code_files/figure-gfm/unnamed-chunk-11-4.png)<!-- -->
+
+``` r
+acf(lm_Kesimpta$residuals)
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-11-5.png)<!-- -->
 
 Kesimpta is one of the lower-selling brands, so we first fit a linear
 model to it. The model is good, it has a relatively high $R^2$ and
@@ -430,10 +417,16 @@ ggplot(Aximod, aes(x=Mes, y=lm_Aximod$residuals)) + geom_point() + geom_hline(yi
 ![](Project-Code_files/figure-gfm/unnamed-chunk-12-3.png)<!-- -->
 
 ``` r
-acf(lm_Aximod$residuals)
+acf(Aximod$TotalUnidades)
 ```
 
 ![](Project-Code_files/figure-gfm/unnamed-chunk-12-4.png)<!-- -->
+
+``` r
+acf(lm_Aximod$residuals)
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-12-5.png)<!-- -->
 
 For the Aximod data, we can see from the start by looking at the $R^2$
 value that this is not a good model at all. $R^2$ Is very low, the
@@ -485,7 +478,7 @@ dwtest(lm_Fincler)
     ##  Durbin-Watson test
     ## 
     ## data:  lm_Fincler
-    ## DW = 1.6908, p-value = 0.1864
+    ## DW = 1.7438, p-value = 0.1993
     ## alternative hypothesis: true autocorrelation is greater than 0
 
 ``` r
@@ -548,7 +541,7 @@ dwtest(lm_Lemtrada)
     ##  Durbin-Watson test
     ## 
     ## data:  lm_Lemtrada
-    ## DW = 2.1207, p-value = 0.4994
+    ## DW = 2.392, p-value = 0.7211
     ## alternative hypothesis: true autocorrelation is greater than 0
 
 ``` r
@@ -612,7 +605,7 @@ dwtest(lm_Limostad)
     ##  Durbin-Watson test
     ## 
     ## data:  lm_Limostad
-    ## DW = 2.176, p-value = 0.4812
+    ## DW = 1.3326, p-value = 0.05509
     ## alternative hypothesis: true autocorrelation is greater than 0
 
 ``` r
@@ -673,7 +666,7 @@ dwtest(lm_Mavenclad)
     ##  Durbin-Watson test
     ## 
     ## data:  lm_Mavenclad
-    ## DW = 1.7776, p-value = 0.2259
+    ## DW = 1.4486, p-value = 0.06568
     ## alternative hypothesis: true autocorrelation is greater than 0
 
 ``` r
@@ -733,7 +726,7 @@ dwtest(lm_Ocrevus)
     ##  Durbin-Watson test
     ## 
     ## data:  lm_Ocrevus
-    ## DW = 1.4412, p-value = 0.0649
+    ## DW = 1.3038, p-value = 0.03185
     ## alternative hypothesis: true autocorrelation is greater than 0
 
 ``` r
@@ -791,7 +784,7 @@ dwtest(lm_Singomod)
     ##  Durbin-Watson test
     ## 
     ## data:  lm_Singomod
-    ## DW = 1.6716, p-value = 0.1615
+    ## DW = 1.7027, p-value = 0.1762
     ## alternative hypothesis: true autocorrelation is greater than 0
 
 ``` r
@@ -851,7 +844,7 @@ dwtest(lm_Tysabri)
     ##  Durbin-Watson test
     ## 
     ## data:  lm_Tysabri
-    ## DW = 0.91473, p-value = 0.002024
+    ## DW = 1.3977, p-value = 0.05171
     ## alternative hypothesis: true autocorrelation is greater than 0
 
 ``` r
@@ -871,3 +864,317 @@ is actually a significant predictor for sales, but $R^2$ is low, the
 residuals graph does not have constant variance and shows an underlying
 pattern, and the DW test backs this up as it has a low value, indicating
 negative significant autocorrelation.
+
+Now, let’s have a deeper look into some models: Iclomod, Aximod and
+Kesimpta. A reminder of what their data and their first models look
+like:
+
+``` r
+ggplot(Iclomod, aes(x=Mes, y=TotalUnidades)) + geom_point() + geom_line(linetype='dashed') + geom_line(y=make.instantaneous(BM_Iclomod$fitted), color='red') + ggtitle('Iclomod Units sold and BM fit')
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+``` r
+ggplot(Kesimpta, aes(x=Mes, y=TotalUnidades)) + geom_line(linetype='dashed') + geom_point() +geom_abline(intercept = lm_Kesimpta$coefficients[1], slope = lm_Kesimpta$coefficients[2], color='red') +ggtitle('Kesimpta Units Sold and BM fit')
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-20-2.png)<!-- -->
+
+``` r
+ggplot(Aximod, aes(x=Mes, y=TotalUnidades)) + geom_line(linetype='dashed') + geom_point() +geom_abline(intercept = lm_Aximod$coefficients[1], slope = lm_Aximod$coefficients[2], color='red') + ggtitle('Aximod Units Sold and BM fit')
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-20-3.png)<!-- --> For
+Iclomod, let’s consider a GBM with an exponential shock.
+
+``` r
+GBM_Iclomod <- GBM(Iclomod$TotalUnidades, shock = 'exp', nshock=1, prelimestimates = c(BM_Iclomod$coefficients[1], BM_Iclomod$coefficients[2], BM_Iclomod$coefficients[3], 9, -0.1, 0.4))
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+``` r
+ggplot(Iclomod, aes(x=Mes, y=TotalUnidades)) + geom_point() + geom_line(linetype='dashed') + geom_line(aes(y=make.instantaneous(GBM_Iclomod$fitted)), color='red')
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-21-2.png)<!-- -->
+
+``` r
+acf(GBM_Iclomod$residuals)
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-21-3.png)<!-- -->
+
+``` r
+ggplot(Iclomod, aes(x=Mes, y=GBM_Iclomod$residuals)) + geom_point() + geom_hline(yintercept=0, linetype = 'dashed') 
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-21-4.png)<!-- -->
+
+``` r
+summary(GBM_Iclomod)
+```
+
+    ## Call: ( Generalized Bass model with 1  Exponential  shock )
+    ## 
+    ##   GBM(series = Iclomod$TotalUnidades, shock = "exp", nshock = 1, 
+    ##     prelimestimates = c(BM_Iclomod$coefficients[1], BM_Iclomod$coefficients[2], 
+    ##         BM_Iclomod$coefficients[3], 9, -0.1, 0.4))
+    ## 
+    ## Residuals:
+    ##       Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+    ## -4915.628 -2638.739     7.217  -368.048  1661.800  3205.493 
+    ## 
+    ## Coefficients:
+    ##            Estimate    Std.Error         Lower         Upper  p-value    
+    ## m     2.403888e+05 9.209344e+03  2.223388e+05  2.584388e+05 1.57e-10 ***
+    ## p     1.083553e-02 1.516746e-03  7.862761e-03  1.380830e-02 3.13e-05 ***
+    ## q     3.868816e-01 3.374908e-02  3.207346e-01  4.530286e-01 4.49e-07 ***
+    ## a1    8.468757e+00 3.835213e-01  7.717069e+00  9.220445e+00 8.14e-10 ***
+    ## b1   -5.211089e-01 3.627366e-01 -1.232060e+00  1.898417e-01 1.81e-01    
+    ## c1   -9.032272e-01 3.798517e-01 -1.647723e+00 -1.587316e-01 3.88e-02   *
+    ## ---
+    ##  Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ##  Residual standard error  3172.659  on  10  degrees of freedom
+    ##  Multiple R-squared:   0.998761  Residual sum of squares:  100657622
+
+We can see an improvement in the model for the Iclomod data, for
+starters, the $R^2$ is higher, secondly, residual variance is much more
+stable and less trend and pattern is visible in it, shown in the lower
+residual standard error. The shock introduced at month 9 suggests an
+event that occured in September 2023 that may have positively shocked
+sales in the Iclomod brand. But with a superficial look at data from
+other Gilenya and Lebrina, the two other big brands in the market, we
+can see that sales also spike up in September 2023, although not as
+violently as for Iclomod. This could suggest that there was some event,
+campaign or policy that affected the market.
+
+For Kesimpta, let’s consider transforming the data to a log scale, as
+there is constantly growing variance shown.
+
+``` r
+summary(lm_Kesimpta)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = Kesimpta$TotalUnidades ~ Kesimpta$Mes)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -269.98  -78.64  -15.93  112.04  264.33 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)  -664.971    113.784  -5.844 2.49e-05 ***
+    ## Kesimpta$Mes   84.693      6.961  12.166 1.69e-09 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 153.2 on 16 degrees of freedom
+    ## Multiple R-squared:  0.9025, Adjusted R-squared:  0.8964 
+    ## F-statistic:   148 on 1 and 16 DF,  p-value: 1.685e-09
+
+``` r
+Kesimpta_log <- log(Kesimpta$TotalUnidades)
+
+lm_log_Kesimpta <- lm(Kesimpta_log ~ Kesimpta$Mes)
+
+summary(lm_log_Kesimpta)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = Kesimpta_log ~ Kesimpta$Mes)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.84833 -0.19277  0.05663  0.24264  0.63845 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)   3.29571    0.27567   11.96 2.17e-09 ***
+    ## Kesimpta$Mes  0.18088    0.01687   10.72 1.03e-08 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.3712 on 16 degrees of freedom
+    ## Multiple R-squared:  0.8779, Adjusted R-squared:  0.8703 
+    ## F-statistic:   115 on 1 and 16 DF,  p-value: 1.028e-08
+
+``` r
+ggplot(Kesimpta, aes(x=Mes, y=Kesimpta_log)) + geom_point() + geom_line(linetype='dashed')+ geom_line(aes(x=Mes, y=lm_log_Kesimpta$coefficients[1] + lm_log_Kesimpta$coefficients[2]*Mes), color='red')
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+``` r
+acf(lm_log_Kesimpta$residuals)
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-22-2.png)<!-- -->
+
+``` r
+ggplot(Kesimpta, aes(x=Mes, y=lm_log_Kesimpta$residuals)) + geom_point() + geom_hline(yintercept = 0, color='red')
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-22-3.png)<!-- -->
+
+``` r
+dwtest(lm_log_Kesimpta)
+```
+
+    ## 
+    ##  Durbin-Watson test
+    ## 
+    ## data:  lm_log_Kesimpta
+    ## DW = 0.96419, p-value = 0.003044
+    ## alternative hypothesis: true autocorrelation is greater than 0
+
+A linear model to the log transformed data for Kesimpta improves the
+issue of the constantly growing variance, however, the $R^2$ is smaller,
+and there seems to be an underlying pattern in the model’s residuals.
+This is confirmed by the dw test, where we reject the null hypothesis
+that autocorrelation is 0, due to the p-score being 0.08. A possible
+better model here could be a BM, since we know a linear model is
+unrealistic, as no product would have unbounded growth in the market.
+
+``` r
+BM_log_Kesimpta <- BM(Kesimpta_log)
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+``` r
+summary(BM_log_Kesimpta)
+```
+
+    ## Call: ( Standard Bass Model )
+    ## 
+    ##   BM(series = Kesimpta_log)
+    ## 
+    ## Residuals:
+    ##       Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+    ## -0.732314 -0.160979  0.001317 -0.062780  0.067178  0.431559 
+    ## 
+    ## Coefficients:
+    ##        Estimate    Std.Error        Lower        Upper  p-value    
+    ## m 235.00245861 1.418854e+01 207.19342697 262.81149026 4.75e-11 ***
+    ## p   0.01748555 8.544905e-04   0.01581078   0.01916033 2.26e-12 ***
+    ## q   0.08151103 4.582154e-03   0.07253018   0.09049189 1.71e-11 ***
+    ## ---
+    ##  Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ##  Residual standard error  0.346862  on  15  degrees of freedom
+    ##  Multiple R-squared:   0.999969  Residual sum of squares:  1.804694
+
+``` r
+ggplot(Kesimpta, aes(x=Mes, y=Kesimpta_log)) + geom_point() + geom_line(linetype='dashed') + geom_line( y=make.instantaneous(BM_log_Kesimpta$fitted), color='red') + ggtitle('Kesimpta log sales with BM model')
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-23-2.png)<!-- -->
+
+``` r
+acf(BM_log_Kesimpta$residuals)
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-23-3.png)<!-- -->
+
+``` r
+ggplot(Kesimpta, aes(x=Mes, y=BM_log_Kesimpta$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype='dashed')
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-23-4.png)<!-- -->
+
+Here we have so far the best fitting model for the Kesimpta data. $R^2$
+is high, the estimators are significant, and variance is much more
+stable. However, there is still sinusodial behaviour in the acf for the
+model residuals and we can see a clear pattern once we plot the
+residuals: There is a steep upward trend in residuals at the start and
+then it flattens out. This may suggest a shock at the start of the data,
+so one last possible improvement would be to consider a positive shock
+at the start.
+
+``` r
+GBM_log_Kesimpta <- GBM(Kesimpta_log, shock='exp', nshock=1, prelimestimates = c(BM_log_Kesimpta$coefficients[1], BM_log_Kesimpta$coefficients[2], BM_log_Kesimpta$coefficients[3], 7, -0.5, 0.5))
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+
+``` r
+summary(GBM_log_Kesimpta)
+```
+
+    ## Call: ( Generalized Bass model with 1  Exponential  shock )
+    ## 
+    ##   GBM(series = Kesimpta_log, shock = "exp", nshock = 1, prelimestimates = c(BM_log_Kesimpta$coefficients[1], 
+    ##     BM_log_Kesimpta$coefficients[2], BM_log_Kesimpta$coefficients[3], 
+    ##     7, -0.5, 0.5))
+    ## 
+    ## Residuals:
+    ##      Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+    ## -0.48353 -0.11855 -0.01900 -0.03162  0.08309  0.58094 
+    ## 
+    ## Coefficients:
+    ##           Estimate    Std.Error        Lower        Upper  p-value    
+    ## m    251.70879356 22.570652349 207.47112785 295.94645927 1.09e-07 ***
+    ## p      0.01588057  0.001304127   0.01332453   0.01843661 4.11e-08 ***
+    ## q      0.07843656  0.006011860   0.06665353   0.09021959 1.89e-08 ***
+    ## a1     4.17766933  1.610625585   1.02090119   7.33443747 2.35e-02   *
+    ## b1    -1.08309325  2.196258295  -5.38768041   3.22149391 6.31e-01    
+    ## c1     0.25871178  0.450106064  -0.62347990   1.14090345 5.76e-01    
+    ## ---
+    ##  Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ##  Residual standard error  0.282024  on  12  degrees of freedom
+    ##  Multiple R-squared:   0.999951  Residual sum of squares:  0.95445
+
+``` r
+ggplot(Kesimpta, aes(x=Mes, y=Kesimpta_log)) + geom_point() + geom_line(linetype='dashed') + geom_line( y=make.instantaneous(GBM_log_Kesimpta$fitted), color='red') + ggtitle('Kesimpta log sales with BM model')
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-24-2.png)<!-- -->
+
+``` r
+acf(GBM_log_Kesimpta$residuals)
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-24-3.png)<!-- -->
+
+``` r
+ggplot(Kesimpta, aes(x=Mes, y=GBM_log_Kesimpta$residuals)) + geom_point() + geom_hline(yintercept = 0, linetype='dashed')
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-24-4.png)<!-- --> This
+model actually has a slightly lower $R^2$ than the BM without the shock,
+but it greatly reduces variance in the residuals, and gets rid of most
+of the underlying pattern in them, implying that the model captures much
+more accurately the shape of the data.
+
+Another possibility is to consider an ARIMA model for the Kesimpta data,
+since we can see a clear upwards trend in the data.
+
+``` r
+Arima_kesimpta <- arima(Kesimpta$TotalUnidades, order = c(0,1,0), seasonal = c(0,0,0))
+summary(Arima_kesimpta)
+```
+
+    ## 
+    ## Call:
+    ## arima(x = Kesimpta$TotalUnidades, order = c(0, 1, 0), seasonal = c(0, 0, 0))
+    ## 
+    ## 
+    ## sigma^2 estimated as 63654:  log likelihood = -118.14,  aic = 238.28
+    ## 
+    ## Training set error measures:
+    ##                    ME     RMSE      MAE      MPE     MAPE      MASE       ACF1
+    ## Training set 88.39117 245.1882 177.9467 13.51764 28.36819 0.9444565 -0.6515229
+
+``` r
+plot(Kesimpta$TotalUnidades)
+lines(fitted(Arima_kesimpta), col=2)
+```
+
+![](Project-Code_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
